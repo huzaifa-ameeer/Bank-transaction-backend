@@ -14,10 +14,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-transporter.on("token", (token) => {
-  console.log("New access token issued:", token.accessToken);
-  console.log("Expires:", new Date(token.expires));
-});
+// transporter.on("token", (token) => {
+//   console.log("New access token issued:", token.accessToken);
+//   console.log("Expires:", new Date(token.expires));
+// });
 
 transporter.verify((error, success) => {
   if (error) {
