@@ -38,8 +38,37 @@ const userRegister = async (req, res) => {
   });
 };
 
-const userLogin = async (req,res) => {
+const userLogin = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await userModel.findOne({ email }).select("+password");
+  if (!user) {
+    return res.status(401).json({
+      message: "Invalid email",
+      success: false,
+    });
+  }
+  const isValidPassword = await user.comparePassword(password);
 
-}
+  if (!isValidPassword) {
+    return res.status(401).json({
+      message: "Invalid Password",
+      success: false,
+    });
+  }
+
+  const token = jwt.sign({
+    userId: user._id,
+  }, process.env.JWT_SECRET_KEY, {expiresIn: "3d"});
+
+  res.cookie("token", token);
+
+  res.status(200).json({
+    message: "User logged in successfully",
+    user: {
+      name: user.name,
+      email: user.email,
+    },
+  });
+};
 
 export default { userRegister, userLogin };
