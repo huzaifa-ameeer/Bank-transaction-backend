@@ -1,9 +1,12 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail',
   auth: {
-    type: "OAuth2",
+    type: 'OAuth2',
     user: process.env.EMAIL_USER,
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
@@ -11,12 +14,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Verify the connection configuration
+transporter.on("token", (token) => {
+  console.log("New access token issued:", token.accessToken);
+  console.log("Expires:", new Date(token.expires));
+});
+
 transporter.verify((error, success) => {
   if (error) {
-    console.error("Error connecting to email server:", error);
+    console.error('Error connecting to email server:', error);
   } else {
-    console.log("Email server is ready to send messages");
+    console.log('Email server is ready to send messages');
   }
 });
 
@@ -32,10 +39,18 @@ const sendEmail = async (to, subject, text, html) => {
     });
 
     console.log('Message sent: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
   } catch (error) {
     console.error('Error sending email:', error);
+    throw error;
   }
 };
 
-module.exports = sendEmail;
+async function sendRegistrationEmail(userEmail, name) {
+  const subject = 'Welcome to Backend Ledger!';
+  const text = `Hello ${name},\n\nThank you for registering with Backend Ledger! We're excited to have you on board.\n\nBest regards,\nThe Backend Ledger Team`;
+  const html = `<p>Hello ${name},</p><p>Thank you for registering with <strong>Backend Ledger</strong>! We're excited to have you on board.</p><p>Best regards,<br>The Backend Ledger Team</p>`;  
+
+  await sendEmail(userEmail, subject, text, html);
+}
+
+export default { sendRegistrationEmail} ;

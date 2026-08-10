@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import emailService from "../services/email.service.js";
 
 const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
@@ -36,6 +37,15 @@ const userRegister = async (req, res) => {
     success: true,
     token,
   });
+
+  // Send registration email
+
+  try {
+    await emailService.sendRegistrationEmail(email, name);
+  } catch (error) {
+    console.error("Error sending registration email:", error);
+  }
+  
 };
 
 const userLogin = async (req, res) => {
