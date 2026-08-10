@@ -1,17 +1,19 @@
 import accountModel from "../models/accounts.model.js";
 
 const createAccount = async (req, res) => {
-    const user = req.user
+  const user = req.user;
 
-    const account = await accountModel.create({
-        user: user._id
-    })
+  const account = await accountModel.create({
+    user: user._id,
+  });
 
-    res.status(201).json({
-        message: "Account created successfully",
-        success: true,
-        account
-    })
-}
+  res.status(201).json({
+    message: "Account created successfully",
+    name: user.name,
+    email: user.email,
+    account,
+    success: true
+  });
+};
 
-export default {createAccount}
+export default { createAccount };
