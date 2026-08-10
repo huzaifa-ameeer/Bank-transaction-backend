@@ -38,4 +38,8 @@ const userRegister = async (req, res) => {
   });
 };
 
-export default { userRegister };
+const userLogin = async (req,res) => {
+
+}
+
+export default { userRegister, userLogin };
