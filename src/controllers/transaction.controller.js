@@ -56,4 +56,14 @@ const createTransaction = async (req, res) => {
     })
   }
 
+  //check account status
+
+  if(fromUserAccount.status !== "ACTIVE" || toUserAccount.status !== "ACTIVE")
+  {
+    return res.status(400).json({
+        message: "Both accounts must be ACTIVE to process transaction",
+        success: false
+    })
+  }
+
 };
