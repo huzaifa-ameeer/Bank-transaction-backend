@@ -14,10 +14,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// transporter.on("token", (token) => {
-//   console.log("New access token issued:", token.accessToken);
-//   console.log("Expires:", new Date(token.expires));
-// });
 
 transporter.verify((error, success) => {
   if (error) {
@@ -53,4 +49,19 @@ async function sendRegistrationEmail(userEmail, name) {
   await sendEmail(userEmail, subject, text, html);
 }
 
-export default { sendRegistrationEmail} ;
+async function sendTransactionEmail(userEmail, name, transactionDetails) {
+  const subject = 'Transaction Notification';
+  const text = `Hello ${name},\n\nA transaction has been made on your account:\n\n${transactionDetails}\n\nBest regards,\nThe Backend Ledger Team`;
+  const html = `<p>Hello ${name},</p><p>A transaction has been made on your account:</p><p>${transactionDetails}</p><p>Best regards,<br>The Backend Ledger Team</p>`;
+
+  await sendEmail(userEmail, subject, text, html);
+}
+
+async function sendTransactionFailureEmail(userEmail, name, transactionDetails) {
+  const subject = 'Transaction Failure Notification';
+  const text = `Hello ${name},\n\nWe regret to inform you that a transaction on your account has failed:\n\n${transactionDetails}\n\nPlease check your account and try again.\n\nBest regards,\nThe Backend Ledger Team`;
+  const html = `<p>Hello ${name},</p><p>We regret to inform you that a transaction on your account has failed:</p><p>${transactionDetails}</p><p>Please check your account and try again.</p><p>Best regards,<br>The Backend Ledger Team</p>`;
+  await sendEmail(userEmail, subject, text, html);
+}
+
+export default { sendRegistrationEmail, sendTransactionEmail };
