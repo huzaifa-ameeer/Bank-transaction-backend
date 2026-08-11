@@ -1,4 +1,4 @@
-import { Router } from "express";
+import e, { Router } from "express";
 import authMiddleware from "../middleware/auth.middleware.js";
 import transactionController from "../controllers/transaction.controller.js";
 
@@ -18,4 +18,4 @@ transactionRoutes.post("/", authMiddleware.authMiddleware, transactionController
  */
 transactionRoutes.post("/system/initial-funds", authMiddleware.authSystemUserMiddleware, transactionController.createInitialFundsTransaction)
 
-module.exports = transactionRoutes;
+export default transactionRoutes

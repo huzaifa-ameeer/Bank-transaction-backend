@@ -236,7 +236,7 @@ async function createInitialFundsTransaction(req, res) {
 
 }
 
-module.exports = {
+export default {
     createTransaction,
     createInitialFundsTransaction
 }

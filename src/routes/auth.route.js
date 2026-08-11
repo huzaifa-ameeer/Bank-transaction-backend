@@ -18,4 +18,4 @@ router.post("/logout", authController.userLogoutController)
 
 
 
-module.exports = router
+export default router

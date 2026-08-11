@@ -30,4 +30,4 @@ router.get("/balance/:accountId", authMiddleware.authMiddleware, accountControll
 
 
 
-module.exports = router
+export default router

@@ -75,4 +75,4 @@ const accountModel = mongoose.model("account", accountSchema)
 
 
 
-module.exports = accountModel
+export default accountModel
