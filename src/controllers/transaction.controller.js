@@ -32,38 +32,51 @@ const createTransaction = async (req, res) => {
   //validate idempotency key
 
   const isTransactionExists = await transactionModel.findOne({
-    idempotencyKey: idempotencyKey
-  })
+    idempotencyKey: idempotencyKey,
+  });
 
-  if(isTransactionExists.status === "COMPLETED"){
+  if (isTransactionExists.status === "COMPLETED") {
     return res.json({
-        message: "Transaction already processed"
-    })
+      message: "Transaction already processed",
+    });
   }
-  if(isTransactionExists.status === "PENDING"){
+  if (isTransactionExists.status === "PENDING") {
     return res.json({
-        message: "Transaction is in processing"
-    })
+      message: "Transaction is in processing",
+    });
   }
-  if(isTransactionExists.status === "FAILED"){
+  if (isTransactionExists.status === "FAILED") {
     return res.json({
-        message: "Transaction processing failed, please try again"
-    })
+      message: "Transaction processing failed, please try again",
+    });
   }
-  if(isTransactionExists.status === "REVERSED"){
+  if (isTransactionExists.status === "REVERSED") {
     return res.json({
-        message: "Transaction prcoessing is reversed, please try again"
-    })
+      message: "Transaction prcoessing is reversed, please try again",
+    });
   }
 
   //check account status
 
-  if(fromUserAccount.status !== "ACTIVE" || toUserAccount.status !== "ACTIVE")
-  {
+  if (
+    fromUserAccount.status !== "ACTIVE" ||
+    toUserAccount.status !== "ACTIVE"
+  ) {
     return res.status(400).json({
-        message: "Both accounts must be ACTIVE to process transaction",
-        success: false
-    })
+      message: "Both accounts must be ACTIVE to process transaction",
+      success: false,
+    });
   }
+
+  //derive balance from ledger
+
+  const balance = await fromUserAccount.getBalance();
+  if (balance < amount) {
+    return res.status(400).json({
+      message: `Insufficient balance. Current balance is ${balance}. Required balance is ${amount}`,
+      success: false,
+    });
+  }
+
 
 };
