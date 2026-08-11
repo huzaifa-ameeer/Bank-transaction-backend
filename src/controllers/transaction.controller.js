@@ -28,4 +28,32 @@ const createTransaction = async (req, res) => {
       success: false,
     });
   }
+
+  //validate idempotency key
+
+  const isTransactionExists = await transactionModel.findOne({
+    idempotencyKey: idempotencyKey
+  })
+
+  if(isTransactionExists.status === "COMPLETED"){
+    return res.json({
+        message: "Transaction already processed"
+    })
+  }
+  if(isTransactionExists.status === "PENDING"){
+    return res.json({
+        message: "Transaction is in processing"
+    })
+  }
+  if(isTransactionExists.status === "FAILED"){
+    return res.json({
+        message: "Transaction processing failed, please try again"
+    })
+  }
+  if(isTransactionExists.status === "REVERSED"){
+    return res.json({
+        message: "Transaction prcoessing is reversed, please try again"
+    })
+  }
+
 };
