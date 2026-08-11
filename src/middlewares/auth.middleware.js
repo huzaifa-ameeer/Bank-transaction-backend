@@ -1,6 +1,6 @@
-const userModel = require("../models/user.model")
-const jwt = require("jsonwebtoken")
-const tokenBlackListModel = require("../models/blackList.model")
+import userModel from "../models/user.model.js"
+import jwt from "jsonwebtoken"
+import tokenBlackListModel from "../models/blacklist.model.js"
 
 
 
@@ -24,7 +24,7 @@ async function authMiddleware(req, res, next) {
 
     try {
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
 
         const user = await userModel.findById(decoded.userId)
 
@@ -57,7 +57,7 @@ async function authSystemUserMiddleware(req, res, next) {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
 
         const user = await userModel.findById(decoded.userId).select("+systemUser")
         if (!user.systemUser) {
@@ -78,7 +78,4 @@ async function authSystemUserMiddleware(req, res, next) {
 
 }
 
-module.exports = {
-    authMiddleware,
-    authSystemUserMiddleware
-}
+export { authMiddleware, authSystemUserMiddleware };

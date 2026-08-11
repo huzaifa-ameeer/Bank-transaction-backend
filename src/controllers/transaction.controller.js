@@ -1,8 +1,8 @@
-const transactionModel = require("../models/transaction.model")
-const ledgerModel = require("../models/ledger.model")
-const accountModel = require("../models/account.model")
-const emailService = require("../services/email.service")
-const mongoose = require("mongoose")
+import mongoose from "mongoose";
+import transactionModel from "../models/transaction.model.js";
+import ledgerModel from "../models/ledger.model.js";
+import accountModel from "../models/accounts.model.js";
+import emailService from "../services/email.service.js";
 
 /**
  * - Create a new transaction
@@ -43,6 +43,12 @@ async function createTransaction(req, res) {
     if (!fromUserAccount || !toUserAccount) {
         return res.status(400).json({
             message: "Invalid fromAccount or toAccount"
+        })
+    }
+
+    if (fromUserAccount.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({
+            message: "You can only make transactions from your own accounts"
         })
     }
 
@@ -149,6 +155,11 @@ async function createTransaction(req, res) {
         await session.commitTransaction()
         session.endSession()
     } catch (error) {
+        try {
+            await emailService.sendTransactionFailureEmail(req.user.email, req.user.name, `Amount: ${amount}, Reference: ${idempotencyKey}`)
+        } catch (emailError) {
+            console.error("Error sending failure email:", emailError)
+        }
 
         return res.status(400).json({
             message: "Transaction is Pending due to some issue, please retry after sometime",
@@ -158,7 +169,11 @@ async function createTransaction(req, res) {
     /**
      * 10. Send email notification
      */
-    await emailService.sendTransactionEmail(req.user.email, req.user.name, amount, toAccount)
+    try {
+        await emailService.sendTransactionEmail(req.user.email, req.user.name, `Amount: ${amount} transferred to account ${toAccount}`)
+    } catch (emailError) {
+        console.error("Error sending transaction email:", emailError)
+    }
 
     return res.status(201).json({
         message: "Transaction completed successfully",
