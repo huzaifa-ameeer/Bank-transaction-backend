@@ -64,4 +64,4 @@ async function sendTransactionFailureEmail(userEmail, name, transactionDetails) 
   await sendEmail(userEmail, subject, text, html);
 }
 
-export default { sendRegistrationEmail, sendTransactionEmail };
+export default { sendRegistrationEmail, sendTransactionEmail, sendTransactionFailureEmail };
